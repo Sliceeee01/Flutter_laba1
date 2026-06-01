@@ -1,12 +1,18 @@
 import 'dart:io';
 import 'package:todo_app/todo_repository.dart';
 import 'package:todo_app/todo.dart';
+import 'package:ansicolor/ansicolor.dart';
+
+final AnsiPen greenPen = AnsiPen()..green();
+final AnsiPen redPen = AnsiPen()..red();
+final AnsiPen bluePen = AnsiPen()..blue();
+final AnsiPen yellowPen = AnsiPen()..yellow();
 
 void main() {
   TodoRepository repo = TodoRepository();
   printMenu();
   while (true) {
-    stdout.write("> ");
+    stdout.write(yellowPen("> "));
     String? input = stdin.readLineSync();
     if (input == null) {
       continue;
@@ -23,7 +29,7 @@ void main() {
 }
 
 void printMenu() {
-  print("Консольное приложение TODO");
+  print(yellowPen("Консольное приложение TODO"));
   print("Команды:");
   print(" add <текст>    - добавить задачу");
   print(" list    - показать список");
@@ -35,43 +41,43 @@ void printMenu() {
 
 void addCommand(TodoRepository repo, String input) {
   if (input.length <= 4) {
-    print("Ошибка: введите текст задачи");
+    print(redPen("Ошибка: введите текст задачи"));
     return;
   }
   String title = input.substring(4).trim();
   repo.add(title);
-  print("Задача добавлена");
+  print(greenPen("Задача добавлена"));
 }
 
 void listCommand(TodoRepository repo) {
   List<Todo> todos = repo.getAll();
   if (todos.isEmpty) {
-    print("Список задач пуст");
+    print(yellowPen("Список задач пуст"));
     return;
   }
   for (var todo in todos) {
-    print(todo);
+    print(bluePen(todo.toString()));
   }
 }
 
 void doneCommand(TodoRepository repo, List<String> parts) {
   if (parts.length < 2) {
-    print("Ошибка: укажите id");
+    print(redPen("Ошибка: укажите id"));
     return;
   }
   int id = int.parse(parts[1]);
   repo.complete(id);
-  print("Задача отмечена выполненной");
+  print(greenPen("Задача отмечена выполненной"));
 }
 
 void deleteCommand(TodoRepository repo, List<String> parts) {
   if (parts.length < 2) {
-    print("Ошибка: укажите id");
+    print(redPen("Ошибка: укажите id"));
     return;
   }
   int id = int.parse(parts[1]);
   repo.delete(id);
-  print("Задача удалена");
+  print(greenPen("Задача удалена"));
 }
 
 bool handleCommand(TodoRepository repo, String input) {
@@ -92,13 +98,13 @@ bool handleCommand(TodoRepository repo, String input) {
         deleteCommand(repo, parts);
         break;
       case "exit":
-        print("Выход из программы");
+        print(yellowPen("Выход из программы"));
         return true;
       default:
-        print("Неизвестная команда");
+        print(redPen("Неизвестная команда"));
     }
   } catch (e) {
-    print("Ошибка: $e");
+    print(redPen("Ошибка: $e"));
   }
   return false;
 }
